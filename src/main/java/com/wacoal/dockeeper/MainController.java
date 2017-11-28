@@ -5,7 +5,12 @@
  */
 package com.wacoal.dockeeper;
 
+import com.wacoal.dockeeper.wsdl.EmpClass;
+import com.wacoal.dockeeper.wsdl.GetEmpByFilterResponse;
+import java.util.List;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,8 +27,15 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/main")
 public class MainController {
 
+    @Autowired
+    EmpClient empClient;
+    
     @RequestMapping(method = RequestMethod.GET, value = "")
-    public ModelAndView index() {
+    public ModelAndView index(Model model) {
+        GetEmpByFilterResponse resp =  empClient.getEmpByFilter(); 
+        List<EmpClass> emps = resp.getGetEmpByFilterResult().getEmpClass();
+        EmpClass emp = emps.get(0);
+        model.addAttribute("emp", emp);
         return new ModelAndView("main");
     }
 

@@ -6,6 +6,6 @@
     <body>
       <div th:replace="fragments/header :: header-js"></div>
       <h1 th:text="#{title}" >this is a main</h1>
-      <h2>this is a main line 2</h2>
+      <h2 th:text="${emp.nameTh}">this is a main line 2</h2>
     </body>
   </html>
