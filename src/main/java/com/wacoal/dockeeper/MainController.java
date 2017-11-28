@@ -9,9 +9,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wacoal.dockeeper.wsdl.EmpClass;
 import com.wacoal.dockeeper.wsdl.GetEmpByFilterResponse;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
+import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +39,9 @@ public class MainController {
     @Autowired
     EmpClient empClient;
 
+    @Autowired
+    DataSource datasouce;
+            
     @RequestMapping(method = RequestMethod.GET, value = "")
     public ModelAndView index(Model model) {
         GetEmpByFilterResponse resp = empClient.getEmpByFilter();
@@ -61,7 +70,20 @@ public class MainController {
     @RequestMapping(method = RequestMethod.GET, value = "/some")
     public String getSomeParam(
             @RequestParam(value = "name", required = false, defaultValue = "World") String name
-    ) {
+    ) throws Exception {
+        Connection con = this.datasouce.getConnection();
+        Statement stmt = con.createStatement();
+        ResultSet res = stmt.executeQuery("select * from tb_attach");
+        while(res.next()){
+            System.out.println(res.getString("attach_file"));
+        }
+        res.close();
+        stmt.close();
+        
+        CallableStatement func = con.prepareCall("");
+        
+        con.close();
+        
         return "Some " + name;
     }
 
