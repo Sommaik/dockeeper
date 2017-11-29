@@ -1,13 +1,45 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+    <head>
+    <div th:replace="fragments/header :: header-css"></div>
+</head>
 <body>
+    <div th:replace="fragments/header :: header-js"></div>
+    <div class="container">
+        <h1>Spring Boot file upload example</h1>
 
-<h1>Spring Boot file upload example</h1>
-
-<form method="POST" th:action="@{/doupload(${_csrf.parameterName}=${_csrf.token})}" enctype="multipart/form-data">
-    <input type="file" name="file" /><br/><br/>
-    <input type="submit" value="Submit" />
-</form>
-
+        <form method="POST" th:action="@{/doupload(${_csrf.parameterName}=${_csrf.token})}" enctype="multipart/form-data">
+            <input type="text" name="ownerId" /><br />
+            <input type="text" name="typeId" /><br />
+            <input type="file" name="file" /><br/>
+            <input type="submit" value="Submit" />
+        </form>
+    </div>
+    <select class="js-example-basic-single" name="state">
+    </select>
 </body>
 </html>
+<script>
+    $(document).ready(function () {
+//        $('.js-example-basic-single').select2();
+        $('.js-example-basic-single').select2({
+            ajax: {
+                url: '/ajax/findName/',
+                dataType: 'json',
+                processResults: function (data, params) {
+                    return {
+                        results: data
+                    }
+                }
+            },
+            templateResult: function formatRepo(repo) {
+                if (repo.loading) {
+                    return repo.text;
+                }
+                var markup = repo.nameth;
+            
+                return markup;
+            }
+        });
+    });
+</script>

@@ -30,20 +30,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll();
     }
     
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) 
-            throws Exception {
-        auth
-            .inMemoryAuthentication()
-                .withUser("user").password("pwd").roles("USER");
-    }
-
-//    @Override
-//    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+//    @Autowired
+//    public void configureGlobal(AuthenticationManagerBuilder auth) 
+//            throws Exception {
 //        auth
-//                .ldapAuthentication()
-//                .userDnPatterns("uid={0}, ou=user")
-//                .contextSource()
-//                .url("ldap://10.11.9.135:389/dc=wacoal,dc=co,dc=th");
+//            .inMemoryAuthentication()
+//                .withUser("user").password("pwd").roles("USER");
 //    }
+
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth
+                .ldapAuthentication()
+                .userDnPatterns("uid={0}, ou=user")
+                .contextSource()
+                .url("ldap://10.11.9.135:389/dc=wacoal,dc=co,dc=th");
+    }
 }

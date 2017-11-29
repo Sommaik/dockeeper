@@ -20,10 +20,19 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Principal;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.sql.DataSource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Controller
 public class UploadController {
-
+    
+    @Autowired
+    DataSource datasource;
+    
     //Save the uploaded file to this folder
     private static String UPLOADED_FOLDER = "/Users/sommaik/Workspace/test/";
 
@@ -33,7 +42,11 @@ public class UploadController {
     }
 
     @PostMapping("/doupload") // //new annotation since 4.3
-    public String singleFileUpload(@RequestParam("file") MultipartFile file,
+    public String singleFileUpload(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("typeId") String typeId,
+            @RequestParam("ownerId") String ownerId,
+            Principal principal,
             RedirectAttributes redirectAttributes) {
 
         if (file.isEmpty()) {
@@ -47,12 +60,33 @@ public class UploadController {
             byte[] bytes = file.getBytes();
             Path path = Paths.get(UPLOADED_FOLDER + file.getOriginalFilename());
             Files.write(path, bytes);
-
+            
+            Connection con = this.datasource.getConnection();
+            Statement stmt = con.createStatement();
+            StringBuilder sb = new StringBuilder();
+            sb.append(" insert into tb_attach(owner_id, filename, type_id, create_by, create_date) ")
+                    .append(" values(")
+                    .append("'").append(ownerId).append("'").append(",")
+                    .append("'").append(file.getOriginalFilename()).append("'").append(",")
+                    .append("'").append(typeId).append("'").append(",")
+                    .append("'").append(principal.getName()).append("'").append(",")
+                    .append("getdate()")
+                    .append(")")
+                    ;
+            System.out.println("===============================");
+            System.out.println(sb.toString());
+            System.out.println("===============================");
+//            stmt.executeUpdate(sb.toString());
+            stmt.close();
+            con.close();
             redirectAttributes.addFlashAttribute("message",
                     "You successfully uploaded '" + file.getOriginalFilename() + "'");
+            
 
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (SQLException se){
+            se.printStackTrace();
         }
 
         return "redirect:/uploadStatus";

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wacoal.dockeeper.wsdl.EmpClass;
 import com.wacoal.dockeeper.wsdl.GetEmpByFilterResponse;
+import java.security.Principal;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -46,11 +47,12 @@ public class MainController {
     DataSource datasouce;
             
     @RequestMapping(method = RequestMethod.GET, value = "")
-    public ModelAndView index(Model model) {
+    public ModelAndView index(Model model, Principal principal) {
         GetEmpByFilterResponse resp = empClient.getEmpByFilter();
         List<EmpClass> emps = resp.getGetEmpByFilterResult().getEmpClass();
         EmpClass emp = emps.get(0);
         model.addAttribute("emp", emp);
+        System.out.println(" this is a user login "+ principal.getName());
         return new ModelAndView("main");
     }
 
@@ -97,7 +99,7 @@ public class MainController {
         return "Some " + name;
     }
     
-    @GetMapping("/reports/{reportname:.+}")
+    @GetMapping("/reports/{reportname}")
     public ModelAndView viewReports(
            final ModelMap modelMap,
            ModelAndView view,
