@@ -16,9 +16,12 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
+import javax.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -92,6 +95,23 @@ public class MainController {
             @RequestBody String name
     ) {
         return "Some " + name;
+    }
+    
+    @GetMapping("/reports/{reportname}")
+    public ModelAndView viewReports(
+           final ModelMap modelMap,
+           ModelAndView view,
+           @PathParam("reportname") String reportname,
+           @RequestParam("format") String format,
+           @RequestParam("p_type_id") String typeId
+    ){
+       
+        modelMap.put("datasource", this.datasouce);
+        modelMap.put("format", format);
+        modelMap.put("p_type_id", typeId);
+        view = new ModelAndView(reportname, modelMap);
+        
+        return view;
     }
 
 }
