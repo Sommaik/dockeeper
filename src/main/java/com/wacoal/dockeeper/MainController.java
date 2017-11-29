@@ -97,7 +97,7 @@ public class MainController {
         return "Some " + name;
     }
     
-    @GetMapping("/reports/{reportname}")
+    @GetMapping("/reports/{reportname:.+}")
     public ModelAndView viewReports(
            final ModelMap modelMap,
            ModelAndView view,
